@@ -2,7 +2,7 @@
   <img src="https://app.aqenta.com.tr/logo.svg" alt="Aqenta" width="200"/>
 </p>
 
-<h1 align="center">Aqenta Connect v1.2.9</h1>
+<h1 align="center">Aqenta Connect v1.3.0</h1>
 
 <p align="center">
   <strong>Restoran Yazici & OKC Entegrasyon Programi</strong><br/>
@@ -33,7 +33,7 @@
 | **Termal Yazici** | ESC/POS uyumlu (USB, Seri, Ag) — Epson, Bixolon, Star, Xprinter |
 | **OKC Entegrasyonu** | Odeme Kaydedici Cihaz — Z/X rapor, fis kesme |
 | **Para Cekmecesi** | Yazici uzerinden otomatik tetikleme |
-| **Otomatik Guncelleme** | 2dk aralikla kontrol, WinForms dialog, CMD batch script |
+| **Otomatik Guncelleme** | 10sn aralikla kontrol, anlik indirme, CMD batch script |
 | **SHA256 Checksum** | Indirilen dosya butunluk dogrulamasi |
 | **Rollback** | Guncelleme basarisiz → otomatik eski surume donus |
 | **Uzaktan Yonetim** | Panel uzerinden guncelleme, restart, silme |
@@ -59,8 +59,8 @@
 
 Ilk kurulumdan sonra **tekrar kurulum yapmaniza gerek yoktur**. Program kendini otomatik gunceller:
 
-- Her **2 dakikada bir** yeni surum kontrolu yapar
-- Yeni surum varsa **ilerleme penceresi** acilir ve indirilir
+- Her **10 saniyede bir** yeni surum kontrolu yapar
+- Yeni surum varsa **anlik** ilerleme penceresi acilir ve indirilir
 - **SHA256 checksum** ile dosya butunlugu dogrulanir
 - **CMD batch script** ile EXE degistirilir ve program yeniden baslar
 - Basarisiz olursa **otomatik rollback** — eski surum geri yuklenir
@@ -147,7 +147,19 @@ AqentaConnect.exe (.NET 8, self-contained, single-file)
 
 ## Surum Gecmisi
 
-### v1.2.9 (16 Mart 2026) — FINAL
+### v1.3.0 (17 Mart 2026) — ANLIK
+- **Tum akislar anlik** — bekleme/gecikme yok
+- Guncelleme kontrolu: 10sn aralik, bulunca anlik indirme
+- Agent poll interval: 2sn
+- Agent health check: 1sn
+- Heartbeat: her poll cycle'da
+- Owner panel: Supabase realtime (polling yok)
+- Settings: tek butonla otomatik lisans gonder
+- Owner: yeni surum numarasi otomatik yazilir
+- Fix: print_jobs payload→content, type→job_type (400 hatasi)
+- Fix: lisans sonrasi agent restart
+
+### v1.2.9 (16 Mart 2026)
 - **Uctan uca smoke test** gecti (v1.2.8 → v1.2.9 otomatik guncelleme)
 - Uzaktan restart komutu (Owner panelden)
 - Guncelleme gecmisi loglama (update_history.log)
