@@ -2,7 +2,7 @@
   <img src="https://app.aqenta.com.tr/logo.svg" alt="Aqenta" width="200"/>
 </p>
 
-<h1 align="center">Aqenta Connect v1.3.0</h1>
+<h1 align="center">Aqenta Connect v1.3.11</h1>
 
 <p align="center">
   <strong>Restoran Yazici & OKC Entegrasyon Programi</strong><br/>
@@ -147,66 +147,79 @@ AqentaConnect.exe (.NET 8, self-contained, single-file)
 
 ## Surum Gecmisi
 
-### v1.3.0 (17 Mart 2026) — ANLIK
-- **Tum akislar anlik** — bekleme/gecikme yok
+### v1.3.11 (17 Mart 2026) — Cloud Print Pipeline
+
+Yazdirma mimarisi tamamen bulut tabanli pipeline'a tasindi. Agent artik dogrudan HTTP cagrisi almak yerine Supabase `print_jobs` tablosunu polling ile takip eder. KDS ve kasa paneli farkli cihazlardan (tablet, PC) acildigi icin `localhost` HTTP yaklasimi terk edildi — tum yazdirma islemleri veritabani uzerinden yurutulmektedir.
+
+**Yeni Ozellikler:**
+- Cloud-first yazdirma: Tum fis isleri `print_jobs` tablosuna yazilir, agent polling ile alip yazdirir
+- Uzaktan diagnostik: Agent her polling cycle'da heartbeat gonderir; `agent_instances.update_message` alanindan is durumu, hata mesajlari ve polling metrikleri anlik izlenebilir
+- Otomatik hata yonetimi: Basarisiz isler `error` olarak isaretlenir; gecici hatalar sonraki cycle'da tekrar denenir
+- Uzaktan komutlar: `self_update` ve `restart` job tipleri ile agent uzaktan yonetilebilir
+
+**Mimari Degisiklikler:**
+- KDS panelinden HTTP yazdirma cagrisi kaldirildi — sadece DB INSERT
+- Dosya tabanli duplicate korumasi kaldirildi — Supabase status filtresi yeterli
+- Startup zamani ve 5 dakikalik created_at filtreleri kaldirildi — tum bekleyen isler yasindan bagimsiz islenir
+- Veritabani RLS policy'leri genisletildi: agent icin SELECT/UPDATE/INSERT izni, kitchen ve waiter rolleri icin write izni
+
+**Duzeltilen Sorunlar:**
+- Agent'in veritabani yazma yetkisi eksikti — yazdirma basarili olsa bile is `printing` durumunda kaliyordu
+- Hatali isler tekrar denemiyor, dosyaya yazilip kalici olarak atlaniyordu
+- KDS farkli cihazdan acildiginda `localhost` HTTP erisilemiyordu — yazdirma sessizce basarisiz oluyordu
+- Garson siparis teslim ettiginde gereksiz fis basiliyordu — fis artik sadece kasa hesap kapanisinda basilir
+
+---
+
+### v1.3.0 (17 Mart 2026)
+- Tum akislar anlik — bekleme/gecikme yok
 - Guncelleme kontrolu: 10sn aralik, bulunca anlik indirme
-- Agent poll interval: 2sn
-- Agent health check: 1sn
-- Heartbeat: her poll cycle'da
+- Agent poll interval: 2sn, heartbeat: her poll cycle'da
 - Owner panel: Supabase realtime (polling yok)
 - Settings: tek butonla otomatik lisans gonder
-- Owner: yeni surum numarasi otomatik yazilir
 - Fix: print_jobs payload→content, type→job_type (400 hatasi)
 - Fix: lisans sonrasi agent restart
 
+---
+
 ### v1.2.9 (16 Mart 2026)
-- **Uctan uca smoke test** gecti (v1.2.8 → v1.2.9 otomatik guncelleme)
+- Uctan uca smoke test gecti (v1.2.8 → v1.2.9 otomatik guncelleme)
 - Uzaktan restart komutu (Owner panelden)
 - Guncelleme gecmisi loglama (update_history.log)
-- Installer guncellendi: tanitim yazisi + sozlesme kabulu + dizin secimi
+- Installer guncellendi: tanitim + sozlesme + dizin secimi
 
 ### v1.2.8
 - SHA256 checksum dogrulama (indirilen EXE butunluk kontrolu)
 - Rollback mekanizmasi (CMD batch: basarisiz → .bak'tan geri donus)
-- Tekil agent guncelleme (Owner panelde ⬆ butonu)
+- Tekil agent guncelleme (Owner panelde butonu)
 
-### v1.2.7
-- API key bypass (/diagnostics, /update-status, /trigger-update)
-- Smoke test PASSED
-
-### v1.2.5 — v1.2.6
-- /diagnostics endpoint
-- WinForms progress dialog (indirme ilerlemesi gorsel)
+### v1.2.5 — v1.2.7
+- /diagnostics endpoint, API key bypass
+- WinForms progress dialog (indirme ilerlemesi)
 - PowerShell → CMD batch script (daha guvenilir)
 - HttpClient timeout fix (ayri download client, 15dk timeout)
 
-### v1.2.4
-- Dashboard guncelleme durumu (progress bar + buton + /update-status)
-- Dinamik surum logu
-
-### v1.2.0
+### v1.2.0 — v1.2.4
 - PowerShell ile yerinde guncelleme
-- 2 dakika guncelleme kontrol araligi
+- Dashboard guncelleme durumu (progress bar + buton)
 - Heartbeat UPSERT fix
 - Windows Defender exclusion (kurulumda otomatik)
 
 ### v1.1.0
 - Configured durum kontrolu (frontend entegrasyonu)
 
-### v1.0.3
+### v1.0.1 — v1.0.3
+- Profesyonel fis sablonu, yazici bilgisi panelde
+- KDS fis fiyat duzeltme
 - Turkce karakter ASCII transliteration
 - Otomatik guncelleme (30sn geri sayim)
 
-### v1.0.2
-- KDS fis fiyat duzeltme
-
-### v1.0.1
-- Profesyonel fis sablonu
-- Yazici bilgisi panelde
-
-### v1.0.0
+### v1.0.0 (15 Mart 2026)
 - Ilk surum: Splash screen, GUI wizard, AES-256-GCM sifreleme
-- Otomatik yazici kesif, coklu yazici destegi
+- ESC/POS yazdir (USB, Seri, Ag), otomatik yazici kesif, coklu yazici
+- OKC entegrasyonu (Ingenico, Hugin, Profilo, Beko, Olivetti, Casio, Custom SpA)
+- Local HTTP API (localhost:19542), Supabase print_jobs polling
+- System tray, sifreli config, otomatik guncelleme
 
 ---
 
