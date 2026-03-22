@@ -24,143 +24,126 @@
 
 ## Nedir?
 
-**Aqenta Connect**, Aqenta SaaS panelinden gelen yazdır / mali işlem komutlarını yerel donanıma ileten Windows masaüstü uygulamasıdır. Sistem tepsisinde çalışır. Otomatik güncelleme (Supabase `agent_versions` + GitHub Release), SHA256 doğrulama ve rollback ile kesintisiz çalışır.
+**Aqenta Connect**, Aqenta işletme paneli ile birlikte çalışan Windows uygulamasıdır. Fiş yazdırma, para çekmecesi ve uyumlu ÖKC işlemlerini bilgisayarınızdaki donanıma iletir. Sistem tepsisinde çalışır; yeni sürümler **otomatik güncelleme** ile gelir (indirme doğrulanır, sorun olursa güvenli geri dönüş).
 
 ### Özellikler
 
 | Özellik | Açıklama |
 |---------|----------|
 | **Termal yazıcı** | ESC/POS (USB, seri, ağ) |
-| **ÖKC** | Z/X raporu, satış fişi |
+| **ÖKC** | Z/X raporu, satış fişi (desteklenen markalar) |
 | **Para çekmecesi** | Yazıcı üzerinden tetikleme |
-| **Cloud yazdırma** | `print_jobs` tablosu — KDS ve kasa farklı PC’den |
-| **Otomatik güncelleme** | Aktif sürüm `agent_versions`; indirme **ZIP** (içinde tek `AqentaConnect.exe`) |
-| **SHA256** | **Çıkarılmış EXE** üzerinden doğrulama (`checksum_sha256` = EXE hash, ZIP değil) |
-| **Rollback** | Güncelleme başarısız → yedekten dönüş |
-| **Uzaktan komut** | `self_update`, `restart` job tipleri |
-| **Yerel API** | `http://localhost:19542` |
+| **Bulut yazdırma** | Panelden gelen yazdırma işleri sırayla işlenir (mutfak / kasa farklı bilgisayarda olabilir) |
+| **İlk kurulum** | **AqentaConnect-Setup.exe** — müşteri önce bunu kurar |
+| **Sonraki sürümler** | Otomatik güncelleme; tekrar Setup şart değildir |
+| **Yerel API** | `http://localhost:19542` (sadece bu bilgisayar) |
 
 ---
 
-## Kurulum
+## Kurulum (ilk kez)
 
-### İlk kurulum
-
-1. Aşağıdaki **ZIP** veya kurulum dosyasını indirin (`AqentaConnect.zip` içinde tek EXE).
-2. ZIP ise: çıkartın → `AqentaConnect.exe` çalıştırın.
-3. Aqenta panelinden **Ayarlar → Donanım** ile kurulum anahtarını gönderin.
-4. Sonraki güncellemeler çoğu kurulumda **otomatik** (OTA).
-
-### Owner — yeni sürüm (platform)
-
-1. **Owner** hesabı → **Agent sürümleri**.
-2. `version` (örn. `1.3.12`), `download_url` = bu repodaki `.../releases/download/vX.Y.Z/AqentaConnect.zip` veya `latest/download/AqentaConnect.zip`.
-3. `file_size_bytes` = ZIP boyutu; `checksum_sha256` = **publish edilen `AqentaConnect.exe`** SHA256 (ZIP hash’i **kullanmayın** — OTA “bütünlük” hatası verir).
-4. Kayıt aktif olunca tüm agent’lar yeni sürümü görür.
+1. Aşağıdan **AqentaConnect-Setup.exe** indirin ve çalıştırın.
+2. Kurulum sihirbazını izleyin (tanıtım → lisans → klasör → Kur).
+3. Kurulum bitince program açılır; tepsi ikonundan erişebilirsiniz.
+4. Aqenta panelinizde **Ayarlar → Donanım** bölümünden kurulum anahtarını oluşturup uygulamaya gönderin.
+5. Bundan sonra yeni sürümler **otomatik** iner ve uygulanır.
 
 ---
 
 ## İndirme
 
+### Müşteri — ilk kurulum (önerilen)
+
 <p align="center">
-  <a href="https://github.com/akin-umit/aqenta-connect-releases/releases/latest/download/AqentaConnect.zip">
-    <img src="https://img.shields.io/badge/%C4%B0ndir-AqentaConnect.zip-00b894?style=for-the-badge&logo=windows" alt="Download ZIP"/>
+  <a href="https://github.com/akin-umit/aqenta-connect-releases/releases/latest/download/AqentaConnect-Setup.exe">
+    <img src="https://img.shields.io/badge/%C4%B0ndir-AqentaConnect--Setup.exe-00b894?style=for-the-badge&logo=windows" alt="İndir Setup"/>
   </a>
 </p>
 
-> **AqentaConnect.zip** — içinde tek **AqentaConnect.exe** (~64–70 MB self-contained). OTA ve panel indirme linkleri bu dosyayı hedefler.
+> **AqentaConnect-Setup.exe** — Inno Setup kurulum paketi. Restoran ve işletmeler ilk kurulumda **bunu** kullanır.
 
-<details>
-<summary>Kurulum sihirbazı (varsa)</summary>
+### Gelişmiş / teknik (ZIP)
 
-Eski veya alternatif dağıtımda **AqentaConnect-Setup.exe** kullanılıyorsa [Releases](https://github.com/akin-umit/aqenta-connect-releases/releases) sayfasından seçin.
+Otomatik güncelleme veya tek dosya dağıtımı için release’lerde **AqentaConnect.zip** de yayınlanır; içinde **AqentaConnect.exe** bulunur. İlk kurulum için öncelik yine **Setup**’tır.
 
-</details>
+<p align="center">
+  <a href="https://github.com/akin-umit/aqenta-connect-releases/releases/latest/download/AqentaConnect.zip">
+    <img src="https://img.shields.io/badge/AqentaConnect.zip-tek%20EXE-6366f1?style=for-the-badge&logo=windows" alt="ZIP"/>
+  </a>
+</p>
+
+Tüm dosyalar: [Releases](https://github.com/akin-umit/aqenta-connect-releases/releases)
 
 ---
 
-## Teknik özeti
+## Teknik özet
 
 | Alan | Değer |
 |------|--------|
-| **Platform** | Windows 10/11 x64 |
-| **Runtime** | .NET 8 self-contained |
+| **Platform** | Windows 10/11 (x64) |
+| **Runtime** | .NET 8 (self-contained) |
 | **Yerel API** | `http://localhost:19542` |
-| **Veri** | `%LOCALAPPDATA%\AqentaConnect` |
-| **Güncelleme kaynağı** | Supabase `agent_versions` + GitHub asset |
+| **Veri klasörü** | `%LOCALAPPDATA%\AqentaConnect` |
 
-### API uçları
+### Yerel API uçları
 
 ```
 GET  /health          → Durum
-GET  /diagnostics     → Tanı (DB aktif sürüm, yazıcı, güncelleme)
+GET  /diagnostics     → Tanı bilgisi
 POST /setup           → Kurulum anahtarı
-POST /print           → ESC/POS
+POST /print           → Fiş yazdır
 POST /open-drawer     → Çekmece
 POST /fiscal/sale     → ÖKC satış
 GET  /fiscal/z-report → Z raporu
 GET  /fiscal/x-report → X raporu
 ```
 
-### Supabase tabloları
-
-| Tablo | Açıklama |
-|-------|----------|
-| `agent_versions` | Aktif sürüm, `download_url`, **`checksum_sha256` (EXE)**, mandatory |
-| `agent_instances` | Heartbeat, sürüm, güncelleme mesajı |
-| `print_jobs` | Yazdırma ve uzaktan komut kuyruğu |
-
 ---
 
 ## Sürüm geçmişi
 
-### v1.3.12 (22 Mart 2026) — Mutfak fişi & OTA düzeltmesi
+### v1.3.12 (22 Mart 2026)
 
-- **Mutfak fişi (MADDE 18):** sipariş notu (`internal_note`), baskı sırası (`print_sequence`), ürün satır notları; `receipt_role: kitchen_ticket` ile panel uyumu.
-- **Dağıtım:** GitHub asset **`AqentaConnect.zip`**; SaaS `printAgentClient.ts` ile aynı URL kalıbı.
-- **Owner / `agent_versions`:** `checksum_sha256` alanı ZIP değil, **ZIP’ten çıkan `AqentaConnect.exe`** dosyasının SHA256 değeridir (yanlış hash OTA’da “Dosya bütünlüğü doğrulanamadı” verir).
+- Mutfak fişinde sipariş notu, baskı sırası ve ürün satır notlarının daha düzgün basılması.
+- Otomatik güncelleme sırasında dosya doğrulama iyileştirmesi (kullanıcı tarafında ek işlem gerekmez).
 
-### v1.3.11 (Mart 2026) — Kararlı cloud taban
+### v1.3.11 (Mart 2026)
 
-- `print_jobs` ile uçtan uca bulut yazdırma; agent 5 sn polling.
-- OTA: GitHub **ZIP** + `agent_versions` aktif satır; `self_update` / `restart` uzaktan komutları.
-- **v1.3.12**’ye geçiş: mutfak fişi içerik iyileştirmeleri + checksum alanı düzeltme notları.
+- Bulut tabanlı yazdırma akışında kararlılık; mutfak ve kasa farklı PC’deyken yazdırmanın sorunsuz işlemesi.
+- Otomatik güncelleme paketleri (ZIP) ile dağıtım.
 
 ### v1.3.0 (17 Mart 2026) — Cloud Print Pipeline
 
-Yazdırma mimarisi tamamen bulut kuyruğa taşındı: panel `print_jobs` yazar, agent polling ile işler. KDS ve kasa farklı cihazdayken `localhost` HTTP yerine veritabanı köprüsü kullanılır.
-
-- Cloud-first yazdırma, `agent_instances` ile tanı / heartbeat
-- KDS’den doğrudan HTTP yazdırma kaldırıldı (DB INSERT)
-- RLS / agent yazma izinleri güncellendi
+- Yazdırma işleri panel üzerinden kuyruğa alınır; Connect sırayla işler.
+- Mutfak ve kasa ekranlarının ayrı cihazlarda kullanımına uyum.
 
 ### v1.2.9 (16 Mart 2026)
 
-- Uçtan uca smoke test; uzaktan restart; `update_history.log`
+- Uçtan uca testler; uzaktan yeniden başlatma komutu; güncelleme geçmişi kaydı.
 
 ### v1.2.8
 
-- SHA256 doğrulama, rollback (CMD batch), Owner’dan tekil güncelleme komutu
+- İndirilen güncelleme için bütünlük doğrulama; sorun olursa otomatik geri dönüş.
 
 ### v1.2.5 — v1.2.7
 
-- `/diagnostics`, indirme progress, CMD script, HttpClient timeout iyileştirmesi
+- Tanı (`/diagnostics`) ve indirme deneyimi iyileştirmeleri.
 
 ### v1.2.0 — v1.2.4
 
-- Yerinde güncelleme, dashboard durumu, heartbeat UPSERT
+- Yerinde güncelleme ve durum göstergeleri.
 
 ### v1.0.0 (15 Mart 2026)
 
-- İlk sürüm: ESC/POS, ÖKC, yerel HTTP API, `print_jobs` polling, şifreli config, otomatik güncelleme
+- İlk sürüm: ESC/POS, ÖKC, yerel HTTP API, şifreli ayarlar, otomatik güncelleme.
 
 ---
 
 ## Güvenlik
 
-- Config **AES-256-GCM** + Windows DPAPI  
-- Yerel API **localhost**  
-- Güncelleme dosyası **SHA256** ile doğrulanır; başarısızlıkta **rollback**
+- Ayarlar dosyası şifrelenir; anahtar Windows ile korunur.
+- Yerel servis yalnızca bu bilgisayardan erişilebilir.
+- Güncelleme paketi doğrulanır; başarısız güncellemede geri dönüş.
 
 ---
 
