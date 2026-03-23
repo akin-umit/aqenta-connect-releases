@@ -156,6 +156,13 @@ AqentaConnect.exe (.NET 8, self-contained, single-file)
 
 ## Sürüm geçmişi
 
+### v1.3.13 (23 Mart 2026)
+
+- Toplu dağıtım tek seferde tamamlandı: GitHub Release `v1.3.13` + `AqentaConnect.zip` yayımlandı.
+- Yazdırma akışında aynı sipariş için çift basım riskine karşı agent tarafında dedupe/idempotency koruması eklendi.
+- Kuyruk iş tipleri mutfak ve kapanış fişi için ayrıştırıldı (`kitchen_receipt`, `checkout_receipt`), eski `receipt` uyumu korundu.
+- `receipt_role` parse akışı güncellendi; mutfak/kasa fiş semantiği daha tutarlı hale getirildi.
+
 ### v1.3.12 (22 Mart 2026)
 
 - Mutfak fişinde sipariş notu, baskı sırası ve ürün satır notlarının daha düzgün basılması (panel ile uyumlu içerik).
