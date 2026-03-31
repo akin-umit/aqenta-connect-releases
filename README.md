@@ -2,7 +2,7 @@
   <img src="https://app.aqenta.com.tr/logo.png" alt="Aqenta" width="200"/>
 </p>
 
-<h1 align="center">Aqenta Connect v1.3.12</h1>
+<h1 align="center">Aqenta Connect İndir</h1>
 
 <p align="center">
   <strong>Restoran yazıcı & ÖKC entegrasyon programı</strong><br/>
