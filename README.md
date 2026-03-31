@@ -72,7 +72,7 @@
 ### İlk kurulum (önerilen)
 
 <p align="center">
-  <a href="https://github.com/akin-umit/aqenta-connect-releases/releases/latest/download/AqentaConnect-Setup.exe">
+  <a href="https://github.com/akin-umit/aqenta-connect-releases/releases/download/v1.3.19/AqentaConnect-Setup.exe">
     <img src="https://img.shields.io/badge/%C4%B0ndir-AqentaConnect--Setup.exe-00b894?style=for-the-badge&logo=windows" alt="Download Setup"/>
   </a>
 </p>
