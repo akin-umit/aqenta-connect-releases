@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://app.aqenta.com.tr/logo.svg" alt="Aqenta" width="200"/>
+  <img src="https://app.aqenta.com.tr/logo.png" alt="Aqenta" width="200"/>
 </p>
 
 <h1 align="center">Aqenta Connect v1.3.12</h1>
